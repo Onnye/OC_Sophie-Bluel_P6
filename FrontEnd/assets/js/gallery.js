@@ -22,7 +22,30 @@ async function fetchData(endpoint) {
 //Récupère les travaux depuis l'API
 export const getWorksFromServer = () => fetchData("/api/works");
 
-// Test de réussite
-getWorksFromServer()
-  .then((works) => console.log(works))
-  .catch((err) => console.error(err));
+//Créer un élément figure pour un projet
+function createWorkFigure(work) {
+  const figure = document.createElement("figure");
+  figure.id = `figure-${work.id}`;
+  figure.dataset.categoryId = work.categoryId;
+
+  const img = document.createElement("img");
+  img.src = work.imageUrl;
+  img.alt = work.title;
+
+  const figcaption = document.createElement("figcaption");
+  figcaption.textContent = work.title;
+
+  figure.appendChild(img);
+  figure.appendChild(figcaption);
+
+  return figure;
+}
+
+// Test
+const testWork = {
+  id: 1,
+  imageUrl: "test.jpg",
+  title: "Test Work",
+  categoryId: 2,
+};
+console.log(createWorkFigure(testWork));
