@@ -41,11 +41,37 @@ function createWorkFigure(work) {
   return figure;
 }
 
-// Test
-const testWork = {
-  id: 1,
-  imageUrl: "test.jpg",
-  title: "Test Work",
-  categoryId: 2,
-};
-console.log(createWorkFigure(testWork));
+//Ajoute les travaux au DOM
+export async function addWorksToDom(documentRoot, selector) {
+  const gallery = documentRoot.querySelector(selector);
+  if (!gallery) {
+    console.error(
+      `Le sélecteur ${selector} n'a pas trouvé d'élément dans le DOM.`
+    );
+    return;
+  }
+
+  try {
+    const works = await getWorksFromServer();
+    const fragment = document.createDocumentFragment();
+    works.forEach((work) => {
+      const figure = createWorkFigure(work);
+      fragment.appendChild(figure);
+    });
+    gallery.appendChild(fragment);
+  } catch (error) {
+    console.error(
+      "Une erreur s'est produite lors de l'affichage des travaux : ",
+      error
+    );
+  }
+}
+
+// Affiche tous les travaux au chargement initial et logue le résultat
+document.addEventListener("DOMContentLoaded", () => {
+  addWorksToDom(document, ".gallery")
+    .then(() => {
+      console.log(document.querySelector(".gallery").innerHTML);
+    })
+    .catch((err) => console.error(err));
+});
