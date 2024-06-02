@@ -19,12 +19,10 @@ async function fetchData(endpoint) {
   }
 }
 
-// Test de réussite
-fetchData("/api/works")
-  .then((data) => console.log(data))
-  .catch((err) => console.error(err));
+//Récupère les travaux depuis l'API
+export const getWorksFromServer = () => fetchData("/api/works");
 
-// Test d'erreur
-fetchData("/invalid-endpoint")
-  .then((data) => console.log(data))
+// Test de réussite
+getWorksFromServer()
+  .then((works) => console.log(works))
   .catch((err) => console.error(err));
