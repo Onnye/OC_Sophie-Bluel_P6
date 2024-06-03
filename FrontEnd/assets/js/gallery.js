@@ -1,7 +1,7 @@
 import { host } from "./config.js";
 
 //Fonction utilitaire pour les requêtes fetch.
-async function fetchData(endpoint) {
+export async function fetchData(endpoint) {
   try {
     const response = await fetch(`${host}${endpoint}`);
     if (!response.ok) {
