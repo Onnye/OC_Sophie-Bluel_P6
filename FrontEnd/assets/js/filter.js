@@ -20,6 +20,7 @@ export async function createCategoryFilters() {
     const allButton = document.createElement("button");
     allButton.textContent = "Tous";
     allButton.addEventListener("click", () => {
+      filterWorksByCategory(null);
       setActiveFilter(allButton);
     });
     filterContainer.appendChild(allButton);
@@ -30,6 +31,7 @@ export async function createCategoryFilters() {
       button.textContent = category.name;
       button.dataset.categoryId = category.id;
       button.addEventListener("click", () => {
+        filterWorksByCategory(category.id);
         setActiveFilter(button);
       });
       filterContainer.appendChild(button);
@@ -37,6 +39,8 @@ export async function createCategoryFilters() {
 
     // Définir le bouton "Tous" comme actif par défaut
     setActiveFilter(allButton);
+    // Afficher tous les projets par défaut
+    filterWorksByCategory(null);
   } catch (error) {
     console.error(
       "Une erreur s'est produite lors de la création des filtres de catégorie :",
@@ -44,11 +48,6 @@ export async function createCategoryFilters() {
     );
   }
 }
-
-// Appeler la fonction pour créer les filtres lors du chargement du DOM
-document.addEventListener("DOMContentLoaded", () => {
-  createCategoryFilters();
-});
 
 // Définit le bouton de filtre actif
 function setActiveFilter(activeButton) {
@@ -58,3 +57,38 @@ function setActiveFilter(activeButton) {
   });
   activeButton.classList.add("active");
 }
+
+// Filtre les travaux par catégorie
+async function filterWorksByCategory(categoryId) {
+  const gallery = document.querySelector(".gallery");
+  if (!gallery) {
+    console.error("La galerie n'a pas été trouvée dans le DOM.");
+    return;
+  }
+
+  // Vide la galerie
+  gallery.innerHTML = "";
+
+  try {
+    const works = await getWorksFromServer();
+    const filteredWorks = categoryId
+      ? works.filter((work) => work.categoryId === categoryId)
+      : works;
+    const fragment = document.createDocumentFragment();
+    filteredWorks.forEach((work) => {
+      const figure = createWorkFigure(work);
+      fragment.appendChild(figure);
+    });
+    gallery.appendChild(fragment);
+  } catch (error) {
+    console.error(
+      "Une erreur s'est produite lors du filtrage des travaux :",
+      error
+    );
+  }
+}
+
+// Appeler la fonction pour créer les filtres lors du chargement du DOM
+document.addEventListener("DOMContentLoaded", () => {
+  createCategoryFilters();
+});
