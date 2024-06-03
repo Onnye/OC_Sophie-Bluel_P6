@@ -23,7 +23,7 @@ export function createWorkFigure(work) {
 }
 
 // Ajoute les travaux au DOM
-export async function addWorksToDom(documentRoot, selector) {
+export async function addWorksToDom(documentRoot, selector, works) {
   const gallery = documentRoot.querySelector(selector);
   if (!gallery) {
     console.error(
@@ -32,25 +32,24 @@ export async function addWorksToDom(documentRoot, selector) {
     return;
   }
 
+  const fragment = document.createDocumentFragment();
+  works.forEach((work) => {
+    const figure = createWorkFigure(work);
+    fragment.appendChild(figure);
+  });
+  gallery.appendChild(fragment);
+}
+
+// Affiche tous les travaux au chargement initial
+document.addEventListener("DOMContentLoaded", async () => {
   try {
     const works = await getWorksFromServer();
-    const fragment = document.createDocumentFragment();
-    works.forEach((work) => {
-      const figure = createWorkFigure(work);
-      fragment.appendChild(figure);
-    });
-    gallery.appendChild(fragment);
+    await addWorksToDom(document, ".gallery", works);
+    console.log(document.querySelector(".gallery").innerHTML);
   } catch (error) {
     console.error(
       "Une erreur s'est produite lors de l'affichage des travaux : ",
       error
     );
   }
-}
-
-// Affiche tous les travaux au chargement initial et logue le résultat
-document.addEventListener("DOMContentLoaded", () => {
-  addWorksToDom(document, ".gallery")
-    .then(() => console.log(document.querySelector(".gallery").innerHTML))
-    .catch((err) => console.error(err));
 });

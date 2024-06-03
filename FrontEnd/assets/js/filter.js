@@ -1,5 +1,9 @@
 import { fetchData } from "./utils.js";
-import { getWorksFromServer, createWorkFigure } from "./gallery.js";
+import {
+  getWorksFromServer,
+  createWorkFigure,
+  addWorksToDom,
+} from "./gallery.js";
 
 // Récupère les catégories depuis l'API
 export async function getCategoriesFromServer() {
@@ -7,7 +11,7 @@ export async function getCategoriesFromServer() {
 }
 
 // Crée les boutons de filtre de catégorie
-export async function createCategoryFilters() {
+export async function createCategoryFilters(works) {
   try {
     const categories = await getCategoriesFromServer();
     const filterContainer = document.getElementById("filter");
@@ -20,7 +24,7 @@ export async function createCategoryFilters() {
     const allButton = document.createElement("button");
     allButton.textContent = "Tous";
     allButton.addEventListener("click", () => {
-      filterWorksByCategory(null);
+      filterWorksByCategory(works, null);
       setActiveFilter(allButton);
     });
     filterContainer.appendChild(allButton);
@@ -31,7 +35,7 @@ export async function createCategoryFilters() {
       button.textContent = category.name;
       button.dataset.categoryId = category.id;
       button.addEventListener("click", () => {
-        filterWorksByCategory(category.id);
+        filterWorksByCategory(works, category.id);
         setActiveFilter(button);
       });
       filterContainer.appendChild(button);
@@ -40,7 +44,7 @@ export async function createCategoryFilters() {
     // Définir le bouton "Tous" comme actif par défaut
     setActiveFilter(allButton);
     // Afficher tous les projets par défaut
-    filterWorksByCategory(null);
+    filterWorksByCategory(works, null);
   } catch (error) {
     console.error(
       "Une erreur s'est produite lors de la création des filtres de catégorie :",
@@ -59,7 +63,7 @@ function setActiveFilter(activeButton) {
 }
 
 // Filtre les travaux par catégorie
-async function filterWorksByCategory(categoryId) {
+async function filterWorksByCategory(works, categoryId) {
   const gallery = document.querySelector(".gallery");
   if (!gallery) {
     console.error("La galerie n'a pas été trouvée dans le DOM.");
@@ -69,26 +73,25 @@ async function filterWorksByCategory(categoryId) {
   // Vide la galerie
   gallery.innerHTML = "";
 
-  try {
-    const works = await getWorksFromServer();
-    const filteredWorks = categoryId
-      ? works.filter((work) => work.categoryId === categoryId)
-      : works;
-    const fragment = document.createDocumentFragment();
-    filteredWorks.forEach((work) => {
-      const figure = createWorkFigure(work);
-      fragment.appendChild(figure);
-    });
-    gallery.appendChild(fragment);
-  } catch (error) {
-    console.error(
-      "Une erreur s'est produite lors du filtrage des travaux :",
-      error
-    );
+  let filteredWorks;
+  if (categoryId) {
+    filteredWorks = works.filter((work) => work.categoryId === categoryId);
+  } else {
+    filteredWorks = works;
   }
+
+  await addWorksToDom(document, ".gallery", filteredWorks);
 }
 
 // Appeler la fonction pour créer les filtres lors du chargement du DOM
-document.addEventListener("DOMContentLoaded", () => {
-  createCategoryFilters();
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const works = await getWorksFromServer();
+    await createCategoryFilters(works);
+  } catch (error) {
+    console.error(
+      "Une erreur s'est produite lors de l'initialisation des filtres de catégorie :",
+      error
+    );
+  }
 });
