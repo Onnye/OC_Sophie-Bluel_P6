@@ -19,6 +19,9 @@ export async function createCategoryFilters() {
     // Ajoute un bouton "Tous"
     const allButton = document.createElement("button");
     allButton.textContent = "Tous";
+    allButton.addEventListener("click", () => {
+      setActiveFilter(allButton);
+    });
     filterContainer.appendChild(allButton);
 
     // Crée un bouton pour chaque catégorie
@@ -26,8 +29,14 @@ export async function createCategoryFilters() {
       const button = document.createElement("button");
       button.textContent = category.name;
       button.dataset.categoryId = category.id;
+      button.addEventListener("click", () => {
+        setActiveFilter(button);
+      });
       filterContainer.appendChild(button);
     });
+
+    // Définir le bouton "Tous" comme actif par défaut
+    setActiveFilter(allButton);
   } catch (error) {
     console.error(
       "Une erreur s'est produite lors de la création des filtres de catégorie :",
@@ -40,3 +49,12 @@ export async function createCategoryFilters() {
 document.addEventListener("DOMContentLoaded", () => {
   createCategoryFilters();
 });
+
+// Définit le bouton de filtre actif
+function setActiveFilter(activeButton) {
+  const buttons = document.querySelectorAll("#filter button");
+  buttons.forEach((button) => {
+    button.classList.remove("active");
+  });
+  activeButton.classList.add("active");
+}
