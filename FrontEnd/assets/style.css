@@ -221,6 +221,35 @@ li:hover {
 .gallery img {
   width: 100%;
 }
+
+/* Style pour le conteneur de filtres + les boutons */
+#filter {
+  display: flex;
+  justify-content: center;
+  column-gap: 10px;
+  margin-bottom: 50px;
+}
+
+#filter button {
+  font-family: Syne, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1d6154;
+  border: 1px solid #1d6154;
+  background-color: white;
+  border-radius: 60px;
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  white-space: nowrap;
+}
+
+#filter button:hover,
+#filter button.active {
+  color: #ffffff;
+  background-color: #1d6154;
+}
+
 #contact {
   width: 50%;
   margin: auto;
