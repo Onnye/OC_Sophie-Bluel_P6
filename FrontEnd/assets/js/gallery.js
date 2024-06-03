@@ -1,29 +1,10 @@
-import { host } from "./config.js";
+import { fetchData } from "./utils.js";
 
-//Fonction utilitaire pour les requêtes fetch.
-export async function fetchData(endpoint) {
-  try {
-    const response = await fetch(`${host}${endpoint}`);
-    if (!response.ok) {
-      throw new Error(
-        `La requête a échoué avec le statut : ${response.status}`
-      );
-    }
-    return response.json();
-  } catch (error) {
-    console.error(
-      `Erreur lors de la récupération des données depuis ${endpoint}:`,
-      error
-    );
-    throw error;
-  }
-}
-
-//Récupère les travaux depuis l'API
+// Récupère les travaux depuis l'API
 export const getWorksFromServer = () => fetchData("/api/works");
 
-//Créer un élément figure pour un projet
-function createWorkFigure(work) {
+// Créer un élément figure pour un projet
+export function createWorkFigure(work) {
   const figure = document.createElement("figure");
   figure.id = `figure-${work.id}`;
   figure.dataset.categoryId = work.categoryId;
@@ -41,7 +22,7 @@ function createWorkFigure(work) {
   return figure;
 }
 
-//Ajoute les travaux au DOM
+// Ajoute les travaux au DOM
 export async function addWorksToDom(documentRoot, selector) {
   const gallery = documentRoot.querySelector(selector);
   if (!gallery) {
@@ -70,8 +51,6 @@ export async function addWorksToDom(documentRoot, selector) {
 // Affiche tous les travaux au chargement initial et logue le résultat
 document.addEventListener("DOMContentLoaded", () => {
   addWorksToDom(document, ".gallery")
-    .then(() => {
-      console.log(document.querySelector(".gallery").innerHTML);
-    })
+    .then(() => console.log(document.querySelector(".gallery").innerHTML))
     .catch((err) => console.error(err));
 });
