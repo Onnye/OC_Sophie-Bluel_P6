@@ -9,13 +9,20 @@ export async function getCategoriesFromServer() {
 // Fonction pour créer un bouton de filtre
 function createFilterButton(category, works, filterContainer) {
   const button = document.createElement("button");
-  button.textContent = category ? category.name : "Tous";
+
   if (category) {
+    button.textContent = category.name;
     button.dataset.categoryId = category.id;
+  } else {
+    button.textContent = "Tous";
   }
 
-  button.addEventListener("click", () => {
-    filterWorksByCategory(works, category ? category.id : null);
+  button.addEventListener("click", function () {
+    if (category) {
+      filterWorksByCategory(works, category.id);
+    } else {
+      filterWorksByCategory(works, null);
+    }
     setActiveFilter(button);
   });
 
@@ -34,7 +41,7 @@ export async function createCategoryFilters(works) {
     // Ajoute un bouton "Tous"
     createFilterButton(null, works, filterContainer);
     // Crée un bouton pour chaque catégorie
-    categories.forEach((category) => {
+    categories.forEach(function (category) {
       createFilterButton(category, works, filterContainer);
     });
     // Définir le bouton "Tous" comme actif par défaut
@@ -53,7 +60,7 @@ export async function createCategoryFilters(works) {
 // Définit le bouton de filtre actif
 function setActiveFilter(activeButton) {
   const buttons = document.querySelectorAll("#filter button");
-  buttons.forEach((button) => {
+  buttons.forEach(function (button) {
     button.classList.remove("active");
   });
   activeButton.classList.add("active");
@@ -72,7 +79,9 @@ async function filterWorksByCategory(works, categoryId) {
 
   let filteredWorks;
   if (categoryId) {
-    filteredWorks = works.filter((work) => work.categoryId === categoryId);
+    filteredWorks = works.filter(function (work) {
+      return work.categoryId === categoryId;
+    });
   } else {
     filteredWorks = works;
   }
