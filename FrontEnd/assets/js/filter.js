@@ -10,6 +10,22 @@ export async function getCategoriesFromServer() {
   return await fetchData("/api/categories");
 }
 
+// Fonction pour créer un bouton de filtre
+function createFilterButton(category, works, filterContainer) {
+  const button = document.createElement("button");
+  button.textContent = category ? category.name : "Tous";
+  if (category) {
+    button.dataset.categoryId = category.id;
+  }
+
+  button.addEventListener("click", () => {
+    filterWorksByCategory(works, category ? category.id : null);
+    setActiveFilter(button);
+  });
+
+  filterContainer.appendChild(button);
+}
+
 // Crée les boutons de filtre de catégorie
 export async function createCategoryFilters(works) {
   try {
@@ -19,29 +35,14 @@ export async function createCategoryFilters(works) {
       console.error("Le conteneur de filtres n'a pas été trouvé dans le DOM.");
       return;
     }
-
     // Ajoute un bouton "Tous"
-    const allButton = document.createElement("button");
-    allButton.textContent = "Tous";
-    allButton.addEventListener("click", () => {
-      filterWorksByCategory(works, null);
-      setActiveFilter(allButton);
-    });
-    filterContainer.appendChild(allButton);
-
+    createFilterButton(null, works, filterContainer);
     // Crée un bouton pour chaque catégorie
     categories.forEach((category) => {
-      const button = document.createElement("button");
-      button.textContent = category.name;
-      button.dataset.categoryId = category.id;
-      button.addEventListener("click", () => {
-        filterWorksByCategory(works, category.id);
-        setActiveFilter(button);
-      });
-      filterContainer.appendChild(button);
+      createFilterButton(category, works, filterContainer);
     });
-
     // Définir le bouton "Tous" comme actif par défaut
+    const allButton = filterContainer.querySelector("button");
     setActiveFilter(allButton);
     // Afficher tous les projets par défaut
     filterWorksByCategory(works, null);
