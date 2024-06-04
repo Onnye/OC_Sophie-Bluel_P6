@@ -1,9 +1,5 @@
-import { fetchData } from "./utils.js";
-import {
-  getWorksFromServer,
-  createWorkFigure,
-  addWorksToDom,
-} from "./gallery.js";
+import { fetchData } from "./api.js";
+import { getWorksFromServer, addWorksToDom } from "./work.js";
 
 // Récupère les catégories depuis l'API
 export async function getCategoriesFromServer() {
@@ -84,15 +80,19 @@ async function filterWorksByCategory(works, categoryId) {
   await addWorksToDom(document, ".gallery", filteredWorks);
 }
 
-// Appeler la fonction pour créer les filtres lors du chargement du DOM
-document.addEventListener("DOMContentLoaded", async () => {
+// Initialisation de l'application
+async function initializeApp() {
   try {
     const works = await getWorksFromServer();
+    await addWorksToDom(document, ".gallery", works);
     await createCategoryFilters(works);
   } catch (error) {
     console.error(
-      "Une erreur s'est produite lors de l'initialisation des filtres de catégorie :",
+      "Une erreur s'est produite lors de l'initialisation de l'application :",
       error
     );
   }
-});
+}
+
+// Appeler la fonction d'initialisation lors du chargement du DOM
+document.addEventListener("DOMContentLoaded", initializeApp);

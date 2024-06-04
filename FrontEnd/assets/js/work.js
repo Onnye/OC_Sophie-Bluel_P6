@@ -1,4 +1,4 @@
-import { fetchData } from "./utils.js";
+import { fetchData } from "./api.js";
 
 // Récupère les travaux depuis l'API
 export const getWorksFromServer = () => fetchData("/api/works");
@@ -39,17 +39,3 @@ export async function addWorksToDom(documentRoot, selector, works) {
   });
   gallery.appendChild(fragment);
 }
-
-// Affiche tous les travaux au chargement initial
-document.addEventListener("DOMContentLoaded", async () => {
-  try {
-    const works = await getWorksFromServer();
-    await addWorksToDom(document, ".gallery", works);
-    console.log(document.querySelector(".gallery").innerHTML);
-  } catch (error) {
-    console.error(
-      "Une erreur s'est produite lors de l'affichage des travaux : ",
-      error
-    );
-  }
-});
