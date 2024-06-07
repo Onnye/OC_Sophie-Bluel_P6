@@ -1,7 +1,7 @@
-import { fetchData } from "./api.js";
+import { fetchApi } from "./api.js";
 
 // Récupère les travaux depuis l'API
-export const getWorksFromServer = () => fetchData("/api/works");
+export const getWorksFromServer = () => fetchApi("/api/works");
 
 // Créer un élément figure pour un projet
 export function createWorkFigure(work) {
@@ -23,8 +23,8 @@ export function createWorkFigure(work) {
 }
 
 // Ajoute les travaux au DOM
-export async function addWorksToDom(documentRoot, selector, works) {
-  const gallery = documentRoot.querySelector(selector);
+export async function addWorksToDom(selector, works) {
+  const gallery = document.querySelector(selector);
   if (!gallery) {
     console.error(
       `Le sélecteur ${selector} n'a pas trouvé d'élément dans le DOM.`
@@ -32,6 +32,7 @@ export async function addWorksToDom(documentRoot, selector, works) {
     return;
   }
 
+  gallery.innerHTML = ""; // Clear existing works
   const fragment = document.createDocumentFragment();
   works.forEach((work) => {
     const figure = createWorkFigure(work);
