@@ -250,6 +250,34 @@ li:hover {
   background-color: #1d6154;
 }
 
+/* Style pour la banniere */
+.edit-banner {
+  height: 3.5rem;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  background: #000;
+  flex-direction: row;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  font-family: "work sans";
+  font-size: 1rem;
+  font-weight: 400;
+  color: #fff;
+}
+
+.edit-banner p,
+.icon-banner i {
+  color: #fff;
+  text-align: center;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  cursor: pointer;
+  padding-top: 10px;
+}
+
 #contact {
   width: 50%;
   margin: auto;
