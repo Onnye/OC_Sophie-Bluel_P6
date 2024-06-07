@@ -1,43 +1,25 @@
-import { fetchData } from "./api.js";
+import { fetchApi } from "./api.js";
 import { getWorksFromServer, addWorksToDom } from "./work.js";
 
-// Récupère les catégories depuis l'API
-export async function getCategoriesFromServer() {
-  return await fetchData("/api/categories");
-}
-
-// Fonction pour créer un bouton de filtre
-function createFilterButton(category, works, filterContainer) {
-  const button = document.createElement("button");
-
-  if (category) {
-    button.textContent = category.name;
-    button.dataset.categoryId = category.id;
-  } else {
-    button.textContent = "Tous";
-  }
-
-  button.addEventListener("click", function () {
-    if (category) {
-      filterWorksByCategory(works, category.id);
-    } else {
-      filterWorksByCategory(works, null);
-    }
-    setActiveFilter(button);
-  });
-
-  filterContainer.appendChild(button);
-}
-
-// Crée les boutons de filtre de catégorie
-export async function createCategoryFilters(works) {
+async function loadContent() {
   try {
-    const categories = await getCategoriesFromServer();
+    const works = await getWorksFromServer();
+    await addWorksToDom(".gallery", works);
+    await createCategoryFilters(works);
+  } catch (error) {
+    console.error("Erreur lors de l'initialisation de l'application :", error);
+  }
+}
+
+async function createCategoryFilters(works) {
+  try {
+    const categories = await fetchApi("/api/categories");
     const filterContainer = document.getElementById("filter");
     if (!filterContainer) {
       console.error("Le conteneur de filtres n'a pas été trouvé dans le DOM.");
       return;
     }
+    filterContainer.innerHTML = ""; // Clear existing filters
     // Ajoute un bouton "Tous"
     createFilterButton(null, works, filterContainer);
     // Crée un bouton pour chaque catégorie
@@ -51,7 +33,7 @@ export async function createCategoryFilters(works) {
     filterWorksByCategory(works, null);
   } catch (error) {
     console.error(
-      "Une erreur s'est produite lors de la création des filtres de catégorie :",
+      "Erreur lors de la création des filtres de catégorie :",
       error
     );
   }
@@ -66,17 +48,25 @@ function setActiveFilter(activeButton) {
   activeButton.classList.add("active");
 }
 
-// Filtre les travaux par catégorie
-async function filterWorksByCategory(works, categoryId) {
-  const gallery = document.querySelector(".gallery");
-  if (!gallery) {
-    console.error("La galerie n'a pas été trouvée dans le DOM.");
-    return;
+function createFilterButton(category, works, container) {
+  const button = document.createElement("button");
+  if (category) {
+    button.textContent = category.name;
+  } else {
+    button.textContent = "Tous";
   }
+  button.addEventListener("click", () => {
+    if (category) {
+      filterWorksByCategory(works, category.id);
+    } else {
+      filterWorksByCategory(works, null);
+    }
+    setActiveFilter(button);
+  });
+  container.appendChild(button);
+}
 
-  // Vide la galerie
-  gallery.innerHTML = "";
-
+async function filterWorksByCategory(works, categoryId) {
   let filteredWorks;
   if (categoryId) {
     filteredWorks = works.filter(function (work) {
@@ -85,23 +75,7 @@ async function filterWorksByCategory(works, categoryId) {
   } else {
     filteredWorks = works;
   }
-
-  await addWorksToDom(document, ".gallery", filteredWorks);
+  await addWorksToDom(".gallery", filteredWorks);
 }
 
-// Initialisation de l'application
-async function initializeApp() {
-  try {
-    const works = await getWorksFromServer();
-    await addWorksToDom(document, ".gallery", works);
-    await createCategoryFilters(works);
-  } catch (error) {
-    console.error(
-      "Une erreur s'est produite lors de l'initialisation de l'application :",
-      error
-    );
-  }
-}
-
-// Appeler la fonction d'initialisation lors du chargement du DOM
-document.addEventListener("DOMContentLoaded", initializeApp);
+document.addEventListener("DOMContentLoaded", loadContent);
