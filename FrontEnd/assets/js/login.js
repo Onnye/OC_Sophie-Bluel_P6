@@ -16,17 +16,21 @@ document.addEventListener("DOMContentLoaded", function () {
           body: JSON.stringify({ email, password }),
         });
 
-        if (response.token) {
+        if (response && response.token) {
           localStorage.setItem("token", response.token);
           window.location.href = "../../index.html";
         } else {
           // Affiche un message d'erreur si le token n'est pas présent
-          errorMessage.textContent = "Identifiant ou mot de passe incorrect.";
+          errorMessage.textContent =
+            "Erreur dans l’identifiant ou le mot de passe";
           errorMessage.style.display = "block";
         }
       } catch (error) {
         // Gestion des erreurs génériques
-        console.error("Erreur lors de la tentative de connexion", error);
+        console.error(
+          "Erreur lors de la tentative de connexion : ",
+          error.message
+        );
         errorMessage.textContent =
           "Erreur dans l’identifiant ou le mot de passe";
         errorMessage.style.display = "block";

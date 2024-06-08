@@ -169,6 +169,7 @@ input[type="submit"] {
 #error-message {
   color: red;
   display: none;
+  margin-bottom: 20px;
 }
 
 footer nav ul {
