@@ -166,6 +166,11 @@ input[type="submit"] {
   cursor: pointer;
 }
 
+#error-message {
+  color: red;
+  display: none;
+}
+
 footer nav ul {
   display: flex;
   justify-content: flex-end;
