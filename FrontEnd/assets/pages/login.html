@@ -23,7 +23,7 @@
       <ul>
         <li><a href="../../index.html#projets">projets</a></li>
         <li><a href="../../index.html#contact">contact</a></li>
-        <li><a href="login.html">login</a></li>
+        <li><a href="login.html" id="auth-link">login</a></li>
         <li><a href="https://instagram.com"><img src="../icons/instagram.png" alt="Icône Instagram"></a></li>
       </ul>
     </nav>
@@ -32,14 +32,14 @@
   <main class="main-container">
     <section id="login">
       <h2>Log In</h2>
-      <form action="" method="post">
+      <form id="login-form" action="" method="post">
         <label for="email">E-mail</label>
         <input type="email" name="email" id="email" required>
         <label for="password">Mot de passe</label>
         <input type="password" name="password" id="password" required>
         <input type="submit" value="Se connecter" class="button-login">
       </form>
-
+      <div id="error-message">Erreur dans l’identifiant ou le mot de passe</div>
       <a href="#" class="password">Mot de passe oublié</a>
     </section>
   </main>
@@ -53,6 +53,9 @@
     </nav>
   </footer>
 
+  <!-- Importations JS -->
+  <script src="../js/auth.js" type="module"></script>
+  <script src="../js/login.js" type="module"></script>
 </body>
 
 </html>
