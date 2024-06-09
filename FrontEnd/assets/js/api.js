@@ -1,8 +1,8 @@
-import { host } from "./config.js";
+const hostUrl = `${window.location.protocol}//${window.location.hostname}:5678`;
 
 // Fonction utilitaire pour les requêtes fetch
 export async function fetchApi(endpoint, options = {}) {
-  const url = `${host}${endpoint}`;
+  const url = `${hostUrl}${endpoint}`;
   try {
     const response = await fetch(url, options);
     if (!response.ok) {
