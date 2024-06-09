@@ -222,6 +222,84 @@ li:hover {
   width: 100%;
 }
 
+/* Bouton modifier - Mode admin */
+.modify {
+  display: flex;
+  text-decoration: none;
+  text-align: center;
+  margin-bottom: 1em;
+  color: black;
+  margin-left: 45%;
+}
+
+.icon-modify {
+  margin-top: 10px;
+  margin-left: 35px;
+}
+
+/* Style pour la fenêtre modale */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 650px;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title-modal {
+  font-size: 26px;
+  font-family: "Work Sans";
+  color: #000;
+}
+
+.close-icon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+#add-photo-btn {
+  width: 237px;
+  height: 36px;
+  border-radius: 60px;
+  background: #1d6154;
+  color: #fff;
+  text-align: center;
+  font-family: Syne;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  margin-top: 20px;
+}
+
+.modal-divider {
+  width: 80%;
+  border-top: 1px solid #b3b3b3;
+  margin-top: 40px;
+}
+
 /* Style pour le conteneur de filtres + les boutons */
 #filter {
   display: flex;
@@ -252,24 +330,31 @@ li:hover {
 
 /* Style pour la bannière */
 .edit-banner {
-  width: 100%;
   height: 3.5rem;
-  background-color: #000;
-  display: flex;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  background: #000;
+  display: none;
+  flex-direction: row;
+  gap: 1rem;
   justify-content: center;
   align-items: center;
-  font-family: "Work Sans", sans-serif;
+  font-family: "work sans";
   font-size: 1rem;
+  font-weight: 400;
   color: #fff;
-  display: none;
 }
 
-.edit-banner p {
+.edit-banner p,
+.icon-banner i {
   color: #fff;
   text-align: center;
   font-size: 16px;
-  line-height: 3.5rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
   cursor: pointer;
+  padding-top: 10px;
 }
 
 #contact {

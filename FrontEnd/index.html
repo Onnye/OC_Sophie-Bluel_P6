@@ -24,7 +24,23 @@
 <body>
 	<!-- Bannière -->
 	<div id="editBanner" class="edit-banner">
-		<p class="icon-banner"><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i> Mode Édition</p>
+		<p id="openModal" class="icon-banner"><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i> Mode Édition
+		</p>
+	</div>
+
+	<!-- Fenêtre modale -->
+	<div id="modal" class="modal">
+		<div class="modal-content">
+			<i class="fa-solid fa-xmark js-modal-close close-icon"></i>
+			<div id="modal-view-gallery">
+				<!-- Contenu de la vue galerie -->
+				<h2 class="title-modal">Galerie photo</h2>
+				<div id="modal-gallery" class="mod-gallery"></div>
+				<hr class="modal-divider">
+				<button id="add-photo-btn">Ajouter une photo</button>
+
+			</div>
+		</div>
 	</div>
 
 	<!--*************** Header ***************-->
@@ -56,12 +72,18 @@
 				<p>En cas de besoin, une équipe pluridisciplinaire peut-être constituée : architecte DPLG, décorateur(trice)</p>
 			</article>
 		</section>
+
 		<!--*************** Portfolio dynamic - Section ***************-->
 		<section id="portfolio">
-			<h2>Mes Projets</h2>
-			<div id="filter"></div>
-			<div class="gallery">
+			<div class="modify">
+				<h2>Mes Projets</h2>
+				<div class="icon-modify admin-only">
+					<i class="fa-regular fa-pen-to-square"></i>
+					<a class="js-modal-trigger" href="#modal">modifier</a>
+				</div>
 			</div>
+			<div id="filter"></div><!--generer dynamiquement avec javascript-->
+			<div class="gallery"></div><!--generer dynamiquement avec javascript-->
 		</section>
 
 		<!--*************** Contact - Section ***************-->
@@ -90,8 +112,9 @@
 	</footer>
 
 	<!-- Importations JS -->
-	<script src="./assets/js/filters.js" type="module"></script>
-	<script src="./assets/js/auth.js" type="module"></script>
+	<script src="./assets/js/gallery.js" type="module"></script>
+	<script src="./assets/js/authManagement.js" type="module"></script>
+	<script src="./assets/js/modal.js" type="module"></script>
 </body>
 
 </html>
