@@ -280,7 +280,8 @@ li:hover {
   cursor: pointer;
 }
 
-#add-photo-btn {
+#add-photo-btn,
+#back-to-gallery {
   width: 237px;
   height: 36px;
   border-radius: 60px;
@@ -298,6 +299,42 @@ li:hover {
   width: 80%;
   border-top: 1px solid #b3b3b3;
   margin-top: 40px;
+}
+
+.image-container {
+  position: relative;
+  margin: 10px;
+}
+
+.delete-icon {
+  background-color: #000;
+  border-radius: 2px;
+  font-size: 10px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  cursor: pointer;
+  color: white;
+}
+
+.mod-gallery {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-top: 5px;
+}
+
+.mod-gallery img {
+  position: relative;
+  width: 91%;
+  object-position: center;
+  object-fit: cover;
+  height: 13vh;
 }
 
 /* Style pour le conteneur de filtres + les boutons */
