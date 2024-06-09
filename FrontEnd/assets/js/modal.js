@@ -69,3 +69,32 @@ async function generateProjectsInModal(workApi) {
   }
 }
 generateProjectsInModal(workApi);
+
+// Fonction pour supprimer un projet du DOM et du serveur
+async function deleteProject(itemId) {
+  const userToken = getUserToken();
+  if (!userToken) {
+    console.error("Token d'utilisateur introuvable");
+    return;
+  }
+  try {
+    const response = await fetch(`http://localhost:5678/api/works/${itemId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${getUserToken()}`,
+      },
+    });
+    if (response.status === 204) {
+      console.log("Succès : Le projet a été supprimé.");
+      // Supprimer l'élément du DOM
+      const projectElement = document.getElementById(`figure-${itemId}`);
+      if (projectElement) {
+        projectElement.parentNode.removeChild(projectElement);
+      }
+    } else {
+      console.error("Erreur : Échec de la suppression du projet.");
+    }
+  } catch (error) {
+    console.error("Erreur :", error);
+  }
+}
