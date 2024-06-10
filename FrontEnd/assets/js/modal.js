@@ -141,6 +141,71 @@ function validateForm() {
   }
 }
 
+// Fonction pour ajouter une nouvelle image
+async function addNewImage() {
+  const submitButton = document.getElementById("valid");
+
+  // événement de clic au bouton de validation
+  submitButton.addEventListener("click", async function (event) {
+    event.preventDefault();
+
+    // Récupère les valeurs des champs du formulaire
+    const title = document.getElementById("title").value;
+    const categoryId = document.getElementById("category").value;
+    const imageInput = document.getElementById("add-photo-input");
+
+    // Validation des champs du formulaire
+    if (!title || !categoryId || !imageInput.files[0]) {
+      console.error("Veuillez remplir tous les champs.");
+      return;
+    }
+
+    // Récupère le premier fichier du champ de type fichier
+    const imageFile = imageInput.files[0];
+    // Construire un objet FormData pour envoyer le fichier au serveur
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("category", categoryId);
+    formData.append("image", imageFile);
+
+    try {
+      const response = await fetch(`${apiBaseUrl}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${getUserToken()}`,
+        },
+        body: formData,
+      });
+
+      // Vérifie si la requête a réussi
+      if (response.ok) {
+        const newProject = await response.json();
+        console.log("Le travail a été ajouté avec succès.");
+
+        loadProjectsIntoModal(); // permet d'afficher les projets sans rafraîchir la page (modal)
+        addProjectToGallery(newProject); // permet d'afficher les projets sans rafraîchir la page (page d'accueil)
+
+        // Réinitialise les champs de la modale après l'ajout
+        resetAddPhotoModal();
+      }
+    } catch (error) {
+      console.error("Erreur :", error);
+    }
+  });
+}
+
+// Fonction pour ajouter un projet à la galerie (DOM)
+function addProjectToGallery(project) {
+  const galleryContainer = document.querySelector(".gallery");
+  const projectElement = document.createElement("div");
+  projectElement.classList.add("project");
+  projectElement.innerHTML = `
+    <img src="${project.imageUrl}" alt="${project.title}">
+    <h3>${project.title}</h3>
+  `;
+  galleryContainer.appendChild(projectElement);
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   const modal = document.getElementById("modal");
   const openModalButtons = document.querySelectorAll("[id$='OpenModal']");
@@ -186,4 +251,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
   loadCategories();
   loadProjectsIntoModal();
+  addNewImage(); // Appeler la fonction pour ajouter une nouvelle image
 });
