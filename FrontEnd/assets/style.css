@@ -280,8 +280,7 @@ li:hover {
   cursor: pointer;
 }
 
-#add-photo-btn,
-#back-to-gallery {
+#add-photo-btn {
   width: 237px;
   height: 36px;
   border-radius: 60px;
@@ -335,6 +334,115 @@ li:hover {
   object-position: center;
   object-fit: cover;
   height: 13vh;
+}
+
+/* Page modale - Ajout projets */
+#modal-view-add-photo {
+  display: none;
+}
+
+#back-to-gallery {
+  position: absolute;
+  left: 1pc;
+}
+
+/* Styles supplémentaires pour la partie Ajout de Photo */
+
+.title-modal-add {
+  color: #000;
+  text-align: center;
+  font-family: "Work Sans";
+  font-size: 26px;
+  font-style: normal;
+  font-weight: 400;
+  margin-top: 50px;
+  margin-bottom: 40px;
+}
+
+.add-picture {
+  width: 420px;
+  height: 194px;
+  border-radius: 3px;
+  background: #e8f1f6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.faAddImgSquare {
+  color: #b9c5cc;
+  font-size: 5em;
+  font-family: "Font Awesome 6 Free";
+  font-weight: 400;
+  padding-top: 10px;
+}
+
+#image-preview-container img {
+  width: 129px;
+  height: 193px;
+  top: 1px;
+  position: absolute;
+  left: 145px;
+}
+
+.info {
+  margin-top: 5px;
+  color: #444;
+  text-align: center;
+  font-size: 10px;
+  line-height: normal;
+}
+
+/* Masquer le bouton de téléchargement d'image par défaut */
+#add-photo-input {
+  display: none;
+}
+
+/* Style pour le bouton de téléchargement d'image personnalisé */
+.custom-button-label {
+  display: inline-block;
+  padding: 10px 15px;
+  border-radius: 50px;
+  background: #cbd6dc;
+  cursor: pointer;
+  color: #306685;
+  font-weight: 500;
+  font-family: "Work Sans";
+}
+
+h4 {
+  display: flex;
+  color: black;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: "Work Sans";
+  margin: 2em 0 1em 0;
+  color: #3d3d3d;
+}
+
+#title,
+#category {
+  height: 50px;
+  width: 420px;
+  font-size: 1.2em;
+  border: none;
+  box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+  background-color: white;
+}
+
+#valid {
+  width: 230px;
+  height: 36px;
+  border-radius: 60px;
+  background: #a7a7a7;
+  border-style: none;
+  color: #fff;
+  text-align: center;
+  font-family: Syne;
+  font-size: 14px;
+  margin: 30px 0 55px 0;
+  cursor: pointer;
 }
 
 /* Style pour le conteneur de filtres + les boutons */

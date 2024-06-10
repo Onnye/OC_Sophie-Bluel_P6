@@ -24,8 +24,8 @@
 <body>
 	<!-- Bannière -->
 	<div id="editBanner" class="edit-banner">
-		<p id="openModal" class="icon-banner"><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i> Mode Édition
-		</p>
+		<p id="editBannerOpenModal" class="icon-banner"><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i> Mode
+			Édition</p>
 	</div>
 
 	<!-- Fenêtre modale -->
@@ -38,7 +38,32 @@
 				<div id="modal-gallery" class="mod-gallery"></div>
 				<hr class="modal-divider">
 				<button id="add-photo-btn">Ajouter une photo</button>
-
+			</div>
+			<!-- Contenu de la vue ajout de photo -->
+			<div id="modal-view-add-photo" style="display: none;">
+				<a href="#" id="back-to-gallery"><i class="fa fa-light fa-arrow-left" aria-hidden="true"></i></a>
+				<h2 class="title-modal-add">Ajout photo</h2>
+				<!-- FORMULAIRE -->
+				<form id="add-photo-form">
+					<div class="add-picture">
+						<i class="fa fa-thin fa-image faAddImgSquare"></i>
+						<div id="image-preview-container">
+							<label for="add-photo-input" id="file" class="custom-button-label">
+								<span class="custom-button">+ Ajouter photo</span>
+							</label>
+							<input type="file" id="add-photo-input" name="image" class="custom-button" accept="image/*">
+						</div>
+						<p class="info">jpg, png : 4mo max</p>
+					</div>
+					<h4>Titre</h4>
+					<input type="text" id="title" name="title" required>
+					<h4>Catégorie</h4>
+					<select id="category" name="category" required>
+						<!-- Options de catégorie -->
+					</select>
+					<hr class="modal-divider">
+					<button type="submit" id="valid">Valider</button>
+				</form>
 			</div>
 		</div>
 	</div>
@@ -79,7 +104,7 @@
 				<h2>Mes Projets</h2>
 				<div class="icon-modify admin-only">
 					<i class="fa-regular fa-pen-to-square"></i>
-					<a class="js-modal-trigger" href="#modal">modifier</a>
+					<a id="portfolioOpenModal" href="#modal">modifier</a>
 				</div>
 			</div>
 			<div id="filter"></div><!--generer dynamiquement avec javascript-->
