@@ -411,6 +411,13 @@ li:hover {
   font-family: "Work Sans";
 }
 
+#image-preview-container img {
+  width: 129px;
+  height: 193px;
+  top: 136px;
+  position: absolute;
+  left: 275px;
+}
 h4 {
   display: flex;
   color: black;

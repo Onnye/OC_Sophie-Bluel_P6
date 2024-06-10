@@ -125,6 +125,22 @@ async function loadCategories() {
   }
 }
 
+// Fonction de validation du formulaire et mise à jour de l'état du bouton de soumission
+function validateForm() {
+  const title = document.getElementById("title").value;
+  const categoryId = document.getElementById("category").value;
+  const imageInput = document.getElementById("add-photo-input").files[0];
+  const submitButton = document.getElementById("valid");
+
+  if (title && categoryId && imageInput) {
+    submitButton.disabled = false;
+    submitButton.style.backgroundColor = "#1d6154";
+  } else {
+    submitButton.disabled = true;
+    submitButton.style.backgroundColor = "";
+  }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   const modal = document.getElementById("modal");
   const openModalButtons = document.querySelectorAll("[id$='OpenModal']");
@@ -160,6 +176,13 @@ document.addEventListener("DOMContentLoaded", function () {
       .getElementById("file")
       .querySelector(".custom-button").style.display = "none";
   });
+
+  // Ajout des écouteurs d'événements pour la validation du formulaire
+  document.getElementById("title").addEventListener("input", validateForm);
+  document.getElementById("category").addEventListener("change", validateForm);
+  document
+    .getElementById("add-photo-input")
+    .addEventListener("change", validateForm);
 
   loadCategories();
   loadProjectsIntoModal();
