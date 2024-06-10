@@ -47,18 +47,20 @@ document.addEventListener("DOMContentLoaded", function () {
     modalViewAddPhoto.style.display = "none";
     modalViewGallery.style.display = "block";
   };
+
+  loadCategories();
+  generateProjectsInModal();
 });
 
 // Fonction pour générer les projets dans la modale
-async function generateProjectsInModal(workApi) {
+async function generateProjectsInModal() {
   try {
-    const response = await fetch(workApi);
-    const data = await response.json();
+    const data = await fetchApi("/api/works");
     const modalGallery = document.getElementById("modal-gallery");
-
     modalGallery.innerHTML = ""; // Retire les textes liés aux images
+
+    // Génère les images des projets dans la modale
     data.forEach((project) => {
-      // Génère les images des projets dans la modale
       const imageContainer = document.createElement("div");
       imageContainer.classList.add("image-container");
       const imageElement = document.createElement("img");
@@ -83,7 +85,6 @@ async function generateProjectsInModal(workApi) {
     console.error("Erreur lors de la récupération des projets :", error);
   }
 }
-generateProjectsInModal(workApi);
 
 // Fonction pour supprimer un projet du DOM et du serveur
 async function deleteProject(itemId) {
@@ -93,15 +94,14 @@ async function deleteProject(itemId) {
     return;
   }
   try {
-    const response = await fetch(`http://localhost:5678/api/works/${itemId}`, {
+    const response = await fetch(`${workApi}/${itemId}`, {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${getUserToken()}`,
+        Authorization: `Bearer ${userToken}`,
       },
     });
     if (response.status === 204) {
       console.log("Succès : Le projet a été supprimé.");
-      // Supprimer l'élément du DOM
       const projectElement = document.getElementById(`figure-${itemId}`);
       if (projectElement) {
         projectElement.parentNode.removeChild(projectElement);
@@ -111,5 +111,21 @@ async function deleteProject(itemId) {
     }
   } catch (error) {
     console.error("Erreur :", error);
+  }
+}
+
+// Fonction pour récupérer les catégories via l'API
+async function loadCategories() {
+  const categorySelect = document.getElementById("category");
+  try {
+    const categories = await fetchApi("/api/categories");
+    categories.forEach((category) => {
+      const option = document.createElement("option");
+      option.value = category.id;
+      option.text = category.name;
+      categorySelect.appendChild(option);
+    });
+  } catch (error) {
+    console.error("Erreur lors de la récupération des catégories :", error);
   }
 }
