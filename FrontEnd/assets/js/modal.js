@@ -10,9 +10,12 @@ const workApi = "http://localhost:5678/api/works";
 
 document.addEventListener("DOMContentLoaded", function () {
   const modal = document.getElementById("modal");
-  const openModalButtons = document.querySelectorAll("[id$='OpenModal']"); // Sélectionne tous les éléments avec 'OpenModal'
+  const openModalButtons = document.querySelectorAll("[id$='OpenModal']"); // Sélectionne tous les éléments se terminant par 'OpenModal'
   const closeModalIcon = document.querySelector(".close-icon");
   const addPhotoBtn = document.getElementById("add-photo-btn");
+  const backToGalleryBtn = document.getElementById("back-to-gallery");
+  const modalViewGallery = document.getElementById("modal-view-gallery");
+  const modalViewAddPhoto = document.getElementById("modal-view-add-photo");
 
   // Ouvre la modale
   openModalButtons.forEach((button) => {
@@ -32,9 +35,21 @@ document.addEventListener("DOMContentLoaded", function () {
       modal.style.display = "none";
     }
   };
+
+  // Change vers la vue Ajout de Photo
+  addPhotoBtn.onclick = function () {
+    modalViewGallery.style.display = "none";
+    modalViewAddPhoto.style.display = "block";
+  };
+
+  // Retour à la vue Galerie
+  backToGalleryBtn.onclick = function () {
+    modalViewAddPhoto.style.display = "none";
+    modalViewGallery.style.display = "block";
+  };
 });
 
-// Fonction permettant de générer des projets dans la fenêtre modale
+// Fonction pour générer les projets dans la modale
 async function generateProjectsInModal(workApi) {
   try {
     const response = await fetch(workApi);
