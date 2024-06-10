@@ -48,6 +48,26 @@ function displayImagePreview(file) {
   }
 }
 
+// Fonction pour réinitialiser les champs de la modale d'ajout de photo
+function resetAddPhotoModal() {
+  document.getElementById("title").value = "";
+  document.getElementById("category").value = "";
+  document.getElementById("add-photo-input").value = "";
+  document.getElementById("valid").disabled = true;
+  document.getElementById("valid").style.backgroundColor = "";
+
+  // Supprimer l'image de prévisualisation si elle existe
+  const previewImage = document.querySelector("#add-photo-input + img");
+  if (previewImage) {
+    previewImage.remove();
+  }
+
+  // Réafficher le bouton personnalisé pour le fichier
+  document
+    .getElementById("file")
+    .querySelector(".custom-button").style.display = "block";
+}
+
 // Fonction pour générer les projets dans la modale
 async function loadProjectsIntoModal() {
   try {
