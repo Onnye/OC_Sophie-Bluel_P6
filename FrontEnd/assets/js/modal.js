@@ -8,7 +8,96 @@ function getUserToken() {
 // URL de l'API pour récupérer les projets
 const apiBaseUrl = "http://localhost:5678/api/works";
 
-// Fonction pour ouvrir la modale
+class Modal {
+  constructor() {
+    this.init();
+  }
+
+  init() {
+    this.createModal();
+    this.addEventListeners();
+    loadCategories();
+    loadProjectsIntoModal();
+    addNewImage();
+  }
+
+  createModal() {
+    const modalHTML = `
+          <div id="modal" class="modal">
+              <div class="modal-content">
+                  <i class="fa-solid fa-xmark js-modal-close close-icon"></i>
+                  <div id="modal-view-gallery">
+                      <h2 class="title-modal-add">Galerie photo</h2>
+                      <div id="modal-gallery" class="mod-gallery"></div>
+                      <hr class="modal-divider">
+                      <button id="add-photo-btn">Ajouter une photo</button>
+                  </div>
+                  <div id="modal-view-add-photo" style="display: none;">
+                      <a href="#" id="back-to-gallery"><i class="fa fa-light fa-arrow-left" aria-hidden="true"></i></a>
+                      <h2 class="title-modal-add">Ajout photo</h2>
+                      <form id="add-photo-form">
+                          <div class="add-picture">
+                              <i class="fa fa-thin fa-image faAddImgSquare"></i>
+                              <div id="image-preview-container">
+                                  <label for="add-photo-input" id="file" class="custom-button-label">
+                                      <span class="custom-button">+ Ajouter photo</span>
+                                  </label>
+                                  <input type="file" id="add-photo-input" name="image" class="custom-button" accept="image/*">
+                              </div>
+                              <p class="info">jpg, png : 4mo max</p>
+                          </div>
+                          <h4>Titre</h4>
+                          <input type="text" id="title" name="title" required>
+                          <h4>Catégorie</h4>
+                          <select id="category" name="category" required></select>
+                          <hr class="modal-divider">
+                          <button type="submit" id="valid">Valider</button>
+                      </form>
+                  </div>
+              </div>
+          </div>`;
+
+    document.body.insertAdjacentHTML("beforeend", modalHTML);
+  }
+
+  addEventListeners() {
+    const modal = document.getElementById("modal");
+    const openModalButtons = document.querySelectorAll("[id$='OpenModal']");
+    const closeModalIcon = document.querySelector(".close-icon");
+    const addPhotoButton = document.getElementById("add-photo-btn");
+    const backToGalleryButton = document.getElementById("back-to-gallery");
+    const fileInput = document.getElementById("add-photo-input");
+
+    openModalButtons.forEach((button) => (button.onclick = openModal));
+    closeModalIcon.onclick = closeModal;
+    window.onclick = (event) => {
+      if (event.target === modal) {
+        closeModal();
+      }
+    };
+    addPhotoButton.onclick = () => switchModalView(false);
+    backToGalleryButton.onclick = () => switchModalView(true);
+
+    fileInput.addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      displayImagePreview(file);
+      document
+        .getElementById("file")
+        .querySelector(".custom-button").style.display = "none";
+    });
+
+    document.getElementById("title").addEventListener("input", validateForm);
+    document
+      .getElementById("category")
+      .addEventListener("change", validateForm);
+    document
+      .getElementById("add-photo-input")
+      .addEventListener("change", validateForm);
+  }
+}
+
+// Fonctions externes
+
 function openModal() {
   document.getElementById("modal").style.display = "block";
 }
@@ -111,9 +200,7 @@ async function deleteProject(projectId) {
   try {
     const response = await fetch(`${apiBaseUrl}/${projectId}`, {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${userToken}`,
-      },
+      headers: { Authorization: `Bearer ${userToken}` },
     });
     if (response.status === 204) {
       console.log("Succès : Le projet a été supprimé.");
@@ -191,9 +278,7 @@ async function addNewImage() {
     try {
       const response = await fetch(`${apiBaseUrl}`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${getUserToken()}`,
-        },
+        headers: { Authorization: `Bearer ${getUserToken()}` },
         body: formData,
       });
 
@@ -220,56 +305,11 @@ function addProjectToGallery(project) {
   const projectElement = document.createElement("div");
   projectElement.classList.add("project");
   projectElement.innerHTML = `
-    <img src="${project.imageUrl}" alt="${project.title}">
-    <h3>${project.title}</h3>
-  `;
+      <img src="${project.imageUrl}" alt="${project.title}">
+      <h3>${project.title}</h3>`;
   galleryContainer.appendChild(projectElement);
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  const modal = document.getElementById("modal");
-  const openModalButtons = document.querySelectorAll("[id$='OpenModal']");
-  const closeModalIcon = document.querySelector(".close-icon");
-  const addPhotoButton = document.getElementById("add-photo-btn");
-  const backToGalleryButton = document.getElementById("back-to-gallery");
-  const fileInput = document.getElementById("add-photo-input");
-
-  openModalButtons.forEach(function (button) {
-    button.onclick = openModal;
-  });
-
-  closeModalIcon.onclick = closeModal;
-
-  window.onclick = function (event) {
-    if (event.target === modal) {
-      closeModal();
-    }
-  };
-
-  addPhotoButton.onclick = function () {
-    switchModalView(false);
-  };
-
-  backToGalleryButton.onclick = function () {
-    switchModalView(true);
-  };
-
-  fileInput.addEventListener("change", function (event) {
-    const file = event.target.files[0];
-    displayImagePreview(file);
-    document
-      .getElementById("file")
-      .querySelector(".custom-button").style.display = "none";
-  });
-
-  // Ajout des écouteurs d'événements pour la validation du formulaire
-  document.getElementById("title").addEventListener("input", validateForm);
-  document.getElementById("category").addEventListener("change", validateForm);
-  document
-    .getElementById("add-photo-input")
-    .addEventListener("change", validateForm);
-
-  loadCategories();
-  loadProjectsIntoModal();
-  addNewImage(); // Appeler la fonction pour ajouter une nouvelle image
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = new Modal();
 });
