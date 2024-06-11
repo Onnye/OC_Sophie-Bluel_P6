@@ -174,9 +174,9 @@ async function loadProjectsIntoModal() {
       const deleteIcon = document.createElement("i");
       deleteIcon.classList.add("fa", "fa-light", "fa-trash-can", "delete-icon");
       deleteIcon.id = "delete-icon-" + project.id;
-      deleteIcon.addEventListener("click", function () {
+      deleteIcon.addEventListener("click", async function () {
         if (confirm("Voulez-vous vraiment supprimer ce projet ?")) {
-          deleteProject(project.id);
+          await deleteProject(project.id);
           modalGallery.removeChild(projectContainer);
         }
       });
@@ -287,11 +287,12 @@ async function addNewImage() {
         const newProject = await response.json();
         console.log("Le travail a été ajouté avec succès.");
 
-        loadProjectsIntoModal(); // permet d'afficher les projets sans rafraîchir la page (modal)
+        await loadProjectsIntoModal(); // permet d'afficher les projets sans rafraîchir la page (modal)
         addProjectToGallery(newProject); // permet d'afficher les projets sans rafraîchir la page (page d'accueil)
 
         // Réinitialise les champs de la modale après l'ajout
         resetAddPhotoModal();
+        switchModalView(true); // Revenir à la vue galerie après l'ajout
       }
     } catch (error) {
       console.error("Erreur :", error);
