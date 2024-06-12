@@ -303,11 +303,16 @@ async function addNewImage() {
 // Fonction pour ajouter un projet à la galerie (DOM)
 function addProjectToGallery(project) {
   const galleryContainer = document.querySelector(".gallery");
-  const projectElement = document.createElement("div");
+  const projectElement = document.createElement("figure");
   projectElement.classList.add("project");
+  projectElement.id = `figure-${project.id}`; // Ajout d'un identifiant unique
+  projectElement.setAttribute("data-category-id", project.categoryId); // Assigner la catégorie comme attribut
+
+  // Utilisation de la même structure HTML que les projets provenant de l'API
   projectElement.innerHTML = `
       <img src="${project.imageUrl}" alt="${project.title}">
-      <h3>${project.title}</h3>`;
+      <figcaption>${project.title}</figcaption>
+      <i class="fa fa-light fa-trash-can delete-icon" id="delete-icon-${project.id}" aria-hidden="true"></i>`;
   galleryContainer.appendChild(projectElement);
 }
 
