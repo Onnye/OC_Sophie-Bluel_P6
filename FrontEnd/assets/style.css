@@ -482,19 +482,15 @@ h4 {
 
 /* Style pour la bannière */
 .edit-banner {
-  height: 3.5rem;
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  background: #000;
-  display: none;
-  flex-direction: row;
-  gap: 1rem;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  background-color: #000;
+  display: flex;
   justify-content: center;
   align-items: center;
-  font-family: "work sans";
-  font-size: 1rem;
-  font-weight: 400;
-  color: #fff;
+  height: 60px;
 }
 
 .edit-banner p,
@@ -506,7 +502,7 @@ h4 {
   font-weight: 400;
   line-height: normal;
   cursor: pointer;
-  padding-top: 10px;
+  margin: 0;
 }
 
 #contact {

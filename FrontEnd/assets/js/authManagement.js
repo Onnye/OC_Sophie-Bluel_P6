@@ -22,19 +22,22 @@ export function showBannerIfValidToken() {
   const iconModify = document.querySelector(".icon-modify");
   const filterButtons = document.getElementById("filter");
   const userToken = localStorage.getItem("token");
+  const header = document.querySelector("header");
 
   console.log("Token récupéré :", userToken); // Log pour vérifier la récupération du token
 
   if (userToken) {
     // Affiche la bannière et les éléments administrateur
-    if (banner) banner.style.display = "block";
+    if (banner) banner.style.display = "flex";
     if (iconModify) iconModify.style.display = "block";
     if (filterButtons) filterButtons.style.display = "none";
+    if (header) header.style.marginTop = "90px"; // Ajuste la marge du header
   } else {
     // Cache la bannière et les éléments administrateur
     if (banner) banner.style.display = "none";
     if (iconModify) iconModify.style.display = "none";
     if (filterButtons) filterButtons.style.display = "flex";
+    if (header) header.style.marginTop = "50px"; // Réinitialise la marge du header
   }
 }
 
