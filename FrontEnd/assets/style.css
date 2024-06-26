@@ -225,11 +225,11 @@ li:hover {
 /* Bouton modifier - Mode admin */
 .modify {
   display: flex;
+  justify-content: center;
   text-decoration: none;
   text-align: center;
-  margin-bottom: 1em;
+  margin-bottom: 16px;
   color: black;
-  margin-left: 45%;
 }
 
 .icon-modify {
@@ -287,7 +287,7 @@ li:hover {
   background: #1d6154;
   color: #fff;
   text-align: center;
-  font-family: Syne;
+  font-family: "Syne";
   font-size: 14px;
   cursor: pointer;
   border: none;
@@ -333,7 +333,7 @@ li:hover {
   width: 91%;
   object-position: center;
   object-fit: cover;
-  height: 13vh;
+  height: 140px;
 }
 
 /* Page modale - Ajout projets */
@@ -343,7 +343,7 @@ li:hover {
 
 #back-to-gallery {
   position: absolute;
-  left: 1pc;
+  left: 20px;
 }
 
 /* Styles supplémentaires pour la partie Ajout de Photo */
@@ -372,18 +372,10 @@ li:hover {
 
 .faAddImgSquare {
   color: #b9c5cc;
-  font-size: 5em;
+  font-size: 76px;
   font-family: "Font Awesome 6 Free";
   font-weight: 400;
   padding-top: 10px;
-}
-
-#image-preview-container img {
-  width: 129px;
-  height: 193px;
-  top: 1px;
-  position: absolute;
-  left: 145px;
 }
 
 .info {
@@ -418,6 +410,7 @@ li:hover {
   position: absolute;
   left: 275px;
 }
+
 h4 {
   display: flex;
   color: black;
@@ -432,10 +425,15 @@ h4 {
 #category {
   height: 50px;
   width: 420px;
-  font-size: 1.2em;
+  font-size: 14px;
   border: none;
   box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
   background-color: white;
+}
+
+#form-error {
+  color: red;
+  display: none;
 }
 
 #valid {
@@ -446,7 +444,7 @@ h4 {
   border-style: none;
   color: #fff;
   text-align: center;
-  font-family: Syne;
+  font-family: "Syne";
   font-size: 14px;
   margin: 30px 0 55px 0;
   cursor: pointer;
