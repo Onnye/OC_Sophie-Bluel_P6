@@ -10,7 +10,12 @@ export async function fetchApi(endpoint, options = {}) {
         `La requête a échoué avec le statut : ${response.status}`
       );
     }
-    return await response.json();
+    // Vérifie si la réponse contient un corps avant d'essayer de le parser
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      return await response.json();
+    }
+    return null; // Retourne null si la réponse n'a pas de contenu JSON
   } catch (error) {
     console.error(
       `Erreur lors de la récupération des données depuis ${endpoint}:`,

@@ -5,14 +5,15 @@ export function getWorksFromServer() {
   return fetchApi("/api/works");
 }
 
-function createWorkFigure(work) {
-  var figure = document.createElement("figure");
+// Créer un projets
+export function createWorkFigure(work, isModal = false) {
+  const figure = document.createElement("figure");
   figure.id = "figure-" + work.id;
   figure.dataset.categoryId = work.categoryId;
-  var img = document.createElement("img");
+  const img = document.createElement("img");
   img.src = work.imageUrl;
   img.alt = work.title;
-  var figcaption = document.createElement("figcaption");
+  const figcaption = document.createElement("figcaption");
   figcaption.textContent = work.title;
   figure.appendChild(img);
   figure.appendChild(figcaption);
@@ -21,7 +22,7 @@ function createWorkFigure(work) {
 
 // Ajoute les travaux au DOM
 export async function addWorksToDom(selector, works) {
-  var gallery = document.querySelector(selector);
+  const gallery = document.querySelector(selector);
   if (!gallery) {
     console.error(
       "Le sélecteur " + selector + " n'a pas trouvé d'élément dans le DOM."
@@ -30,9 +31,9 @@ export async function addWorksToDom(selector, works) {
   }
 
   gallery.innerHTML = "";
-  var fragment = document.createDocumentFragment();
+  const fragment = document.createDocumentFragment();
   works.forEach(function (work) {
-    var figure = createWorkFigure(work);
+    const figure = createWorkFigure(work);
     fragment.appendChild(figure);
   });
   gallery.appendChild(fragment);
@@ -40,7 +41,7 @@ export async function addWorksToDom(selector, works) {
 
 async function loadContent() {
   try {
-    var works = await getWorksFromServer();
+    const works = await getWorksFromServer();
     await addWorksToDom(".gallery", works);
     await createCategoryFilters(works);
   } catch (error) {
@@ -49,8 +50,8 @@ async function loadContent() {
 }
 
 async function createCategoryFilters(works) {
-  var categories = await fetchApi("/api/categories");
-  var filterContainer = document.getElementById("filter");
+  const categories = await fetchApi("/api/categories");
+  const filterContainer = document.getElementById("filter");
   if (!filterContainer) {
     console.error("Le conteneur de filtres n'a pas été trouvé dans le DOM.");
     return;
@@ -63,7 +64,7 @@ async function createCategoryFilters(works) {
     createFilterButton(category, works, filterContainer);
   });
   // Définit le bouton "Tous" comme actif par défaut
-  var allButton = filterContainer.querySelector("button");
+  const allButton = filterContainer.querySelector("button");
   // Afficher tous les projets par défaut
   setActiveFilter(allButton);
   filterWorksByCategory(works, null);
@@ -71,7 +72,7 @@ async function createCategoryFilters(works) {
 
 // Définit le bouton de filtre actif
 function setActiveFilter(activeButton) {
-  var buttons = document.querySelectorAll("#filter button");
+  const buttons = document.querySelectorAll("#filter button");
   buttons.forEach(function (button) {
     button.classList.remove("active");
   });
@@ -79,7 +80,7 @@ function setActiveFilter(activeButton) {
 }
 
 function createFilterButton(category, works, container) {
-  var button = document.createElement("button");
+  const button = document.createElement("button");
   if (category) {
     button.textContent = category.name;
   } else {
@@ -93,7 +94,7 @@ function createFilterButton(category, works, container) {
 }
 
 async function filterWorksByCategory(works, categoryId) {
-  var filteredWorks;
+  let filteredWorks;
   if (categoryId) {
     filteredWorks = works.filter(function (work) {
       return work.categoryId === categoryId;

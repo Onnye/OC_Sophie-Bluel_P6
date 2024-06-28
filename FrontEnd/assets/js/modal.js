@@ -1,3 +1,4 @@
+import { getWorksFromServer, createWorkFigure } from "./gallery.js";
 import { fetchApi } from "./api.js";
 
 // Récupération du token utilisateur depuis le stockage local
@@ -15,9 +16,8 @@ class Modal {
   init() {
     this.createModal();
     this.addEventListeners();
-    loadCategories();
-    loadProjectsIntoModal();
-    this.addNewImage();
+    this.loadProjectsIntoModal();
+    this.loadCategoriesIntoSelect();
   }
 
   // Création de la structure HTML de la modale
@@ -42,15 +42,18 @@ class Modal {
                   <label for="add-photo-input" id="file" class="custom-button-label">
                     <span class="custom-button">+ Ajouter photo</span>
                   </label>
-                  <input type="file" id="add-photo-input" name="image" class="custom-button" accept="image/*">
+                  <input type="file" id="add-photo-input" name="image" class="custom-button" accept="image/*" required>
                 </div>
                 <p class="info">jpg, png : 4mo max</p>
               </div>
               <h4>Titre</h4>
               <input type="text" id="title" name="title" required>
               <h4>Catégorie</h4>
-              <select id="category" name="category" required></select>
+              <select id="category" name="category" required>
+                <option value="" disabled selected>Sélectionner la catégorie...</option>
+              </select>
               <hr class="modal-divider">
+              <div id="form-error" style="display: none; color: red;">Veuillez remplir tous les champs.</div>
               <button type="submit" id="valid">Valider</button>
             </form>
           </div>
@@ -67,15 +70,19 @@ class Modal {
     const addPhotoButton = document.getElementById("add-photo-btn");
     const backToGalleryButton = document.getElementById("back-to-gallery");
     const fileInput = document.getElementById("add-photo-input");
+    const validForm = document.getElementById("valid");
 
-    openModalButtons.forEach((button) => (button.onclick = openModal));
-    closeModalIcon.onclick = closeModal;
-    window.onclick = (event) => {
+    openModalButtons.forEach((button) =>
+      button.addEventListener("click", openModal)
+    );
+    closeModalIcon.addEventListener("click", closeModal);
+    window.addEventListener("click", (event) => {
       if (event.target === modal) closeModal();
-    };
-    addPhotoButton.onclick = () => switchModalView(false);
-    backToGalleryButton.onclick = () => switchModalView(true);
+    });
+    addPhotoButton.addEventListener("click", () => switchModalView(false));
+    backToGalleryButton.addEventListener("click", () => switchModalView(true));
 
+    // Ajoute l'image dans la preview
     fileInput.addEventListener("change", (event) => {
       const file = event.target.files[0];
       displayImagePreview(file);
@@ -84,62 +91,181 @@ class Modal {
         .querySelector(".custom-button").style.display = "none";
     });
 
-    document.getElementById("title").addEventListener("input", validateForm);
+    // Écouteur d'événement pour le formulaire de soumission de projet
+    validForm.addEventListener("click", (event) =>
+      this.handleFormSubmit(event)
+    );
+
+    // Écouteurs d'événements pour les champs du formulaire
+    document
+      .getElementById("title")
+      .addEventListener("input", () => this.checkFormValidity());
     document
       .getElementById("category")
-      .addEventListener("change", validateForm);
+      .addEventListener("change", () => this.checkFormValidity());
     document
       .getElementById("add-photo-input")
-      .addEventListener("change", validateForm);
+      .addEventListener("change", () => this.checkFormValidity());
   }
 
-  // Ajout d'une nouvelle image via la modale
-  addNewImage() {
-    const submitButton = document.getElementById("valid");
+  // Gestion soumission du formulaire
+  async handleFormSubmit(event) {
+    event.preventDefault();
 
-    submitButton.addEventListener("click", async function (event) {
-      event.preventDefault();
+    const title = document.getElementById("title").value.trim();
+    const category = document.getElementById("category").value;
+    const image = document.getElementById("add-photo-input").files[0];
+    const formError = document.getElementById("form-error");
 
-      const title = document.getElementById("title").value;
-      const categoryId = document.getElementById("category").value;
-      const imageInput = document.getElementById("add-photo-input");
-
-      // Vérification des champs requis
-      if (!title || !categoryId || !imageInput.files[0]) {
-        console.error("Veuillez remplir tous les champs.");
-        return;
-      }
+    // Vérification des champs requis
+    if (!title || !category || !image) {
+      formError.style.display = "block";
+    } else {
+      formError.style.display = "none";
 
       // Création de l'objet FormData pour envoyer le fichier
       const formData = new FormData();
       formData.append("title", title);
-      formData.append("category", categoryId);
-      formData.append("image", imageInput.files[0]);
+      formData.append("category", category);
+      formData.append("image", image);
 
       try {
-        const response = await fetch(apiBaseUrl, {
+        const response = await fetch(`${apiBaseUrl}`, {
           method: "POST",
-          headers: { Authorization: `Bearer ${getUserToken()}` },
+          headers: {
+            Authorization: `Bearer ${getUserToken()}`,
+          },
           body: formData,
         });
 
         // Vérification de la réussite de la requête
-        if (response.ok) {
-          const newProject = await response.json();
-          console.log("Le travail a été ajouté avec succès.");
-          addProjectToModalGallery(newProject);
-          addProjectToGallery(newProject);
-          resetAddPhotoModal();
-          switchModalView(true);
+        if (!response.ok) {
+          throw new Error("Erreur lors de l'ajout du projet.");
+        }
+
+        const newProject = await response.json();
+        console.log("Le travail a été ajouté avec succès.");
+
+        // Ajouter le nouveau projet à la galerie de la modale
+        this.addProjectToModalGallery(newProject);
+
+        // Ajouter le nouveau projet à la galerie principale
+        addProjectToGallery(newProject);
+
+        // Réinitialisation du formulaire
+        document.getElementById("title").value = "";
+        document.getElementById("category").value = "";
+        document.getElementById("add-photo-input").value = "";
+        document.querySelector(".custom-button").style.display = "block";
+        document.getElementById("valid").style.backgroundColor = "";
+        switchModalView(true);
+        const previewImage = document.querySelector(
+          "#image-preview-container img"
+        );
+        if (previewImage) {
+          previewImage.remove();
         }
       } catch (error) {
-        console.error("Erreur :", error);
+        console.error("Erreur lors de l'ajout du projet :", error);
+      }
+    }
+  }
+
+  // Vérifie la validité du formulaire
+  checkFormValidity() {
+    const title = document.getElementById("title").value.trim();
+    const category = document.getElementById("category").value;
+    const image = document.getElementById("add-photo-input").files[0];
+    const formError = document.getElementById("form-error");
+    const submitButton = document.getElementById("valid");
+
+    if (title && category && image) {
+      submitButton.style.backgroundColor = "#1d6154";
+      formError.style.display = "none";
+    } else {
+      submitButton.style.backgroundColor = "grey";
+    }
+  }
+
+  // Charge les projets dans la modale
+  async loadProjectsIntoModal() {
+    try {
+      const projects = await getWorksFromServer();
+      const modalGallery = document.getElementById("modal-gallery");
+      modalGallery.innerHTML = "";
+      projects.forEach((project) => this.addProjectToModalGallery(project));
+    } catch (error) {
+      console.error("Erreur lors de la récupération des projets :", error);
+    }
+  }
+
+  // Ajoute un projet à la galerie de la modale
+  addProjectToModalGallery(project) {
+    const modalGallery = document.getElementById("modal-gallery");
+    const projectFigure = createWorkFigure(project);
+
+    // Supprime le titre pour la modale
+    const figcaption = projectFigure.querySelector("figcaption");
+    if (figcaption) {
+      figcaption.remove();
+    }
+
+    // Ajoute les styles spécifiques à la modal
+    projectFigure.classList.add("image-container");
+
+    const deleteIcon = document.createElement("i");
+    deleteIcon.classList.add("fa", "fa-light", "fa-trash-can", "delete-icon");
+    deleteIcon.id = `delete-icon-${project.id}`;
+    deleteIcon.addEventListener("click", async () => {
+      if (confirm("Voulez-vous vraiment supprimer ce projet ?")) {
+        await this.deleteProject(project.id);
+        modalGallery.removeChild(projectFigure);
+        const galleryElement = document.getElementById(`figure-${project.id}`);
+        if (galleryElement)
+          galleryElement.parentNode.removeChild(galleryElement);
       }
     });
+
+    projectFigure.appendChild(deleteIcon);
+    modalGallery.appendChild(projectFigure);
+  }
+
+  // Fonction pour supprimer un projet du DOM et de l'API
+  async deleteProject(projectId) {
+    const userToken = getUserToken();
+    if (!userToken) {
+      console.error("Token d'utilisateur introuvable");
+      return;
+    }
+    try {
+      await fetchApi(`/api/works/${projectId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${userToken}` },
+      });
+      console.log("Succès : Le projet a été supprimé.");
+    } catch (error) {
+      console.error("Erreur lors de la suppression du projet :", error);
+    }
+  }
+
+  // Charge les catégories dans le sélecteur
+  async loadCategoriesIntoSelect() {
+    try {
+      const categories = await fetchApi("/api/categories");
+      const categorySelect = document.getElementById("category");
+      categories.forEach((category) => {
+        const option = document.createElement("option");
+        option.value = category.id;
+        option.textContent = category.name;
+        categorySelect.appendChild(option);
+      });
+    } catch (error) {
+      console.error("Erreur lors de la récupération des catégories :", error);
+    }
   }
 }
 
-// Fonctions externes
+// ****************** Fonctions externes ****************** //
 
 // Ouvrir la modale
 const openModal = () =>
@@ -173,114 +299,6 @@ const displayImagePreview = (file) => {
         .insertAdjacentElement("afterend", previewImage);
     };
     reader.readAsDataURL(file);
-  }
-};
-
-// Réinitialiser les champs de la modale d'ajout de photo
-const resetAddPhotoModal = () => {
-  document.getElementById("title").value = "";
-  document.getElementById("category").value = "";
-  document.getElementById("add-photo-input").value = "";
-  document.getElementById("valid").disabled = true;
-  document.getElementById("valid").style.backgroundColor = "";
-  const previewImage = document.querySelector("#add-photo-input + img");
-  if (previewImage) previewImage.remove();
-  document
-    .getElementById("file")
-    .querySelector(".custom-button").style.display = "block";
-};
-
-// Charger les projets dans la modale
-const loadProjectsIntoModal = async () => {
-  try {
-    const projects = await fetchApi("/api/works");
-    const modalGallery = document.getElementById("modal-gallery");
-    modalGallery.innerHTML = "";
-    projects.forEach((project) => addProjectToModalGallery(project));
-  } catch (error) {
-    console.error("Erreur lors de la récupération des projets :", error);
-  }
-};
-
-// Ajouter un projet à la galerie de la modale
-const addProjectToModalGallery = (project) => {
-  const modalGallery = document.getElementById("modal-gallery");
-  const projectContainer = document.createElement("div");
-  projectContainer.classList.add("image-container");
-
-  const projectImage = document.createElement("img");
-  projectImage.src = project.imageUrl;
-
-  const deleteIcon = document.createElement("i");
-  deleteIcon.classList.add("fa", "fa-light", "fa-trash-can", "delete-icon");
-  deleteIcon.id = `delete-icon-${project.id}`;
-  deleteIcon.addEventListener("click", async () => {
-    if (confirm("Voulez-vous vraiment supprimer ce projet ?")) {
-      await deleteProject(project.id);
-      modalGallery.removeChild(projectContainer);
-      const galleryElement = document.getElementById(`figure-${project.id}`);
-      if (galleryElement) galleryElement.parentNode.removeChild(galleryElement);
-    }
-  });
-
-  projectContainer.appendChild(projectImage);
-  projectContainer.appendChild(deleteIcon);
-  modalGallery.appendChild(projectContainer);
-};
-
-// Fonction pour supprimer un projet du DOM et du serveur
-const deleteProject = async (projectId) => {
-  const userToken = getUserToken();
-  if (!userToken) {
-    console.error("Token d'utilisateur introuvable");
-    return;
-  }
-  try {
-    const response = await fetch(`${apiBaseUrl}/${projectId}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${userToken}` },
-    });
-    if (response.status === 204) {
-      console.log("Succès : Le projet a été supprimé.");
-      const projectElement = document.getElementById(`figure-${projectId}`);
-      if (projectElement) projectElement.parentNode.removeChild(projectElement);
-    } else {
-      console.error("Erreur : Échec de la suppression du projet.");
-    }
-  } catch (error) {
-    console.error("Erreur :", error);
-  }
-};
-
-// Fonction pour récupérer les catégories via l'API
-const loadCategories = async () => {
-  try {
-    const categories = await fetchApi("/api/categories");
-    const categorySelect = document.getElementById("category");
-    categories.forEach((category) => {
-      const option = document.createElement("option");
-      option.value = category.id;
-      option.text = category.name;
-      categorySelect.appendChild(option);
-    });
-  } catch (error) {
-    console.error("Erreur lors de la récupération des catégories :", error);
-  }
-};
-
-// Valider le formulaire d'ajout de photo
-const validateForm = () => {
-  const title = document.getElementById("title").value;
-  const categoryId = document.getElementById("category").value;
-  const imageInput = document.getElementById("add-photo-input").files[0];
-  const submitButton = document.getElementById("valid");
-
-  if (title && categoryId && imageInput) {
-    submitButton.disabled = false;
-    submitButton.style.backgroundColor = "#1d6154";
-  } else {
-    submitButton.disabled = true;
-    submitButton.style.backgroundColor = "";
   }
 };
 

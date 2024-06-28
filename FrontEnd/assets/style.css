@@ -386,9 +386,11 @@ li:hover {
   line-height: normal;
 }
 
-/* Masquer le bouton de téléchargement d'image par défaut */
+/* Masque le bouton de téléchargement d'image par défaut */
 #add-photo-input {
-  display: none;
+  opacity: 0;
+  position: absolute;
+  z-index: -1;
 }
 
 /* Style pour le bouton de téléchargement d'image personnalisé */
