@@ -1,4 +1,4 @@
-const hostUrl = `${window.location.protocol}//${window.location.hostname}:5678`;
+const hostUrl = "http://localhost:5678";
 
 // Fonction utilitaire pour les requêtes fetch
 export async function fetchApi(endpoint, options = {}) {
