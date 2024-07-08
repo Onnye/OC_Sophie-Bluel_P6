@@ -4,9 +4,6 @@ import { fetchApi } from "./api.js";
 // Récupération du token utilisateur depuis le stockage local
 const getUserToken = () => localStorage.getItem("token");
 
-// URL de l'API pour récupérer les projets
-const apiBaseUrl = "http://localhost:5678/api/works";
-
 class Modal {
   constructor() {
     this.init();
@@ -97,15 +94,11 @@ class Modal {
     );
 
     // Écouteurs d'événements pour les champs du formulaire
-    document
-      .getElementById("title")
-      .addEventListener("input", () => this.checkFormValidity());
-    document
-      .getElementById("category")
-      .addEventListener("change", () => this.checkFormValidity());
-    document
-      .getElementById("add-photo-input")
-      .addEventListener("change", () => this.checkFormValidity());
+    ["title", "category", "add-photo-input"].forEach((id) => {
+      document
+        .getElementById(id)
+        .addEventListener("input", () => this.checkFormValidity());
+    });
   }
 
   // Gestion soumission du formulaire
@@ -120,54 +113,56 @@ class Modal {
     // Vérification des champs requis
     if (!title || !category || !image) {
       formError.style.display = "block";
-    } else {
-      formError.style.display = "none";
+      return;
+    }
 
-      // Création de l'objet FormData pour envoyer le fichier
-      const formData = new FormData();
-      formData.append("title", title);
-      formData.append("category", category);
-      formData.append("image", image);
+    formError.style.display = "none";
 
-      try {
-        const response = await fetch(`${apiBaseUrl}`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${getUserToken()}`,
-          },
-          body: formData,
-        });
+    // Création de l'objet FormData pour envoyer le fichier
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("category", category);
+    formData.append("image", image);
 
-        // Vérification de la réussite de la requête
-        if (!response.ok) {
-          throw new Error("Erreur lors de l'ajout du projet.");
-        }
+    try {
+      const response = await fetchApi("/api/works", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${getUserToken()}`,
+        },
+        body: formData,
+      });
 
-        const newProject = await response.json();
-        console.log("Le travail a été ajouté avec succès.");
-
-        // Ajouter le nouveau projet à la galerie de la modale
-        this.addProjectToModalGallery(newProject);
-
-        // Ajouter le nouveau projet à la galerie principale
-        addProjectToGallery(newProject);
-
-        // Réinitialisation du formulaire
-        document.getElementById("title").value = "";
-        document.getElementById("category").value = "";
-        document.getElementById("add-photo-input").value = "";
-        document.querySelector(".custom-button").style.display = "block";
-        document.getElementById("valid").style.backgroundColor = "";
-        switchModalView(true);
-        const previewImage = document.querySelector(
-          "#image-preview-container img"
-        );
-        if (previewImage) {
-          previewImage.remove();
-        }
-      } catch (error) {
-        console.error("Erreur lors de l'ajout du projet :", error);
+      if (!response) {
+        throw new Error("Erreur lors de l'ajout du projet.");
       }
+
+      console.log("Le travail a été ajouté avec succès.");
+
+      // Ajouter le nouveau projet à la galerie de la modale
+      this.addProjectToModalGallery(response);
+
+      // Ajouter le nouveau projet à la galerie principale
+      addProjectToGallery(response);
+
+      // Réinitialisation du formulaire
+      this.resetForm();
+      switchModalView(true);
+    } catch (error) {
+      console.error("Erreur lors de l'ajout du projet :", error);
+    }
+  }
+
+  // Réinitialisation du formulaire
+  resetForm() {
+    ["title", "category", "add-photo-input"].forEach((id) => {
+      document.getElementById(id).value = "";
+    });
+    document.querySelector(".custom-button").style.display = "block";
+    document.getElementById("valid").style.backgroundColor = "";
+    const previewImage = document.querySelector("#image-preview-container img");
+    if (previewImage) {
+      previewImage.remove();
     }
   }
 
@@ -277,13 +272,12 @@ const closeModal = () =>
 
 // Basculer entre la vue galerie et la vue ajout photo dans la modale
 const switchModalView = (showGallery) => {
-  if (showGallery) {
-    document.getElementById("modal-view-gallery").style.display = "block";
-    document.getElementById("modal-view-add-photo").style.display = "none";
-  } else {
-    document.getElementById("modal-view-gallery").style.display = "none";
-    document.getElementById("modal-view-add-photo").style.display = "block";
-  }
+  document.getElementById("modal-view-gallery").style.display = showGallery
+    ? "block"
+    : "none";
+  document.getElementById("modal-view-add-photo").style.display = showGallery
+    ? "none"
+    : "block";
 };
 
 // Afficher l'aperçu de l'image sélectionnée
@@ -312,8 +306,7 @@ const addProjectToGallery = (project) => {
 
   projectElement.innerHTML = `
     <img src="${project.imageUrl}" alt="${project.title}">
-    <figcaption>${project.title}</figcaption>
-    <i class="fa fa-light fa-trash-can delete-icon" id="delete-icon-${project.id}" aria-hidden="true"></i>`;
+    <figcaption>${project.title}</figcaption>`;
 
   galleryContainer.appendChild(projectElement);
 };

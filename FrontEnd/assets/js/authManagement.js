@@ -1,7 +1,7 @@
 import { fetchApi } from "./api.js";
 
 // Gestion des liens de connexion/déconnexion
-export function manageAuthLinks() {
+function manageAuthLinks() {
   const authLink = document.getElementById("auth-link");
   const token = localStorage.getItem("token");
 
@@ -17,7 +17,7 @@ export function manageAuthLinks() {
 }
 
 // Fonction pour afficher la bannière si le token est valide
-export function showBannerIfValidToken() {
+function showBannerIfValidToken() {
   const banner = document.getElementById("editBanner");
   const iconModify = document.querySelector(".icon-modify");
   const filterButtons = document.getElementById("filter");
@@ -44,39 +44,36 @@ export function showBannerIfValidToken() {
 // Gestion du formulaire de connexion
 function handleLoginFormSubmission() {
   const form = document.getElementById("login-form");
-  if (form) {
-    form.addEventListener("submit", function (event) {
-      event.preventDefault();
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      const errorMessage = document.getElementById("error-message");
+  if (!form) return;
 
-      fetchApi("/api/users/login", {
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const errorMessage = document.getElementById("error-message");
+
+    try {
+      const response = await fetchApi("/api/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-      })
-        .then(function (response) {
-          if (response && response.token) {
-            localStorage.setItem("token", response.token);
-            window.location.href = "../../index.html";
-          } else {
-            errorMessage.textContent =
-              "Erreur dans l’identifiant ou le mot de passe";
-            errorMessage.style.display = "block";
-          }
-        })
-        .catch(function (error) {
-          console.error(
-            "Erreur lors de la tentative de connexion :",
-            error.message
-          );
-          errorMessage.textContent =
-            "Erreur dans l’identifiant ou le mot de passe";
-          errorMessage.style.display = "block";
-        });
-    });
-  }
+      });
+
+      if (response && response.token) {
+        localStorage.setItem("token", response.token);
+        window.location.href = "../../index.html";
+      } else {
+        throw new Error("Erreur dans l’identifiant ou le mot de passe");
+      }
+    } catch (error) {
+      console.error(
+        "Erreur lors de la tentative de connexion :",
+        error.message
+      );
+      errorMessage.textContent = "Erreur dans l’identifiant ou le mot de passe";
+      errorMessage.style.display = "block";
+    }
+  });
 }
 
 // Initialisation au chargement du document
